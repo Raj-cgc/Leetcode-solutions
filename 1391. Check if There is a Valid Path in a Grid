@@ -1,0 +1,74 @@
+class Solution {
+public:
+
+    int m, n;
+    unordered_map<int, string> mp;
+
+    bool isValid(int i, int j, vector<vector<int>>& grid) {
+        return i >= 0 && i < m && j >= 0 && j < n && grid[i][j] != -1;
+    }
+
+    bool solve(int i, int j, vector<vector<int>>& grid) {
+
+        //base case
+        if(i == m-1 && j == n-1)
+            return true;
+
+        int cell = grid[i][j];
+        grid[i][j] = -1;
+        string street = mp[cell];
+
+        for(auto& road : street) {
+
+            int new_i = i;
+            int new_j = j;
+
+            if(road == 'U') new_i--;
+            else if(road == 'D') new_i++;
+            else if(road == 'L') new_j--;
+            else new_j++;
+
+            if(isValid(new_i, new_j, grid)) {
+
+                char need;
+                if(road == 'U') need = 'D';
+                else if(road == 'D') need = 'U';
+                else if(road == 'L') need = 'R';
+                else need = 'L';
+
+                int new_cell = grid[new_i][new_j];
+                char new_road1 = mp[new_cell][0];
+                char new_road2 = mp[new_cell][1];
+
+                if(new_road1 == need || new_road2 == need) {
+
+                    if(solve(new_i, new_j, grid))
+                        return true;
+
+                }
+
+            }
+
+        }
+
+        grid[i][j] = cell;
+        return false;
+
+    }
+
+    bool hasValidPath(vector<vector<int>>& grid) {
+        
+        m = grid.size();
+        n = grid[0].size();
+
+        mp[1] = "LR";
+        mp[2] = "UD";
+        mp[3] = "LD";
+        mp[4] = "RD";
+        mp[5] = "LU";
+        mp[6] = "RU";
+
+        return solve(0, 0, grid);
+
+    }
+};
