@@ -1,0 +1,66 @@
+class Solution {
+public:
+
+    typedef long long ll;
+    ll t[16][2][2][16][16][20];
+
+    ll solve(int i, bool tight, bool hasStarted, ll evenCount, ll oddCount, ll rem, int k, string& num) {
+
+        //base case
+        if(i >= num.length()) {
+            if(hasStarted && (evenCount == oddCount) && rem == 0)
+                return 1;
+            return 0;
+        }
+
+        if(t[i][tight][hasStarted][evenCount][oddCount][rem] != -1)
+            return t[i][tight][hasStarted][evenCount][oddCount][rem];
+
+        int ans = 0;
+
+        int limit = tight ? num[i] - '0' : 9 ;
+
+        for(int digit = 0 ; digit <= limit ; digit++) {
+
+            bool new_tight = tight && (digit == limit);
+
+            if(digit == 0) {
+                if(hasStarted) {
+                    int new_rem = (rem * 10 + digit) % k;
+                    ans += solve(i+1, new_tight, true, evenCount+1, oddCount, new_rem, k, num);
+                }
+                else {
+                    ans += solve(i+1, new_tight, false, evenCount, oddCount, 0, k, num);
+                }
+            }
+            else {
+                int new_rem = (rem * 10 + digit) % k;
+                if(digit % 2 == 0) {
+                    ans += solve(i+1, new_tight, true, evenCount+1, oddCount, new_rem, k, num);
+                }
+                else {
+                    ans += solve(i+1, new_tight, true, evenCount, oddCount+1, new_rem, k, num);
+                }
+            }
+            
+        }
+
+        return t[i][tight][hasStarted][evenCount][oddCount][rem] = ans;
+
+    }
+
+    int numberOfBeautifulIntegers(int low, int high, int k) {
+        
+        string left = to_string(low-1);
+        string right = to_string(high);
+
+        memset(t, -1, sizeof(t));
+        ll leftAns  = solve(0, 1, 0, 0, 0, 0, k, left);
+
+        memset(t, -1, sizeof(t));
+        ll rightAns = solve(0, 1, 0, 0, 0, 0, k, right);
+
+        return rightAns - leftAns;
+
+    }
+};
