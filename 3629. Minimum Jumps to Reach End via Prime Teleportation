@@ -1,0 +1,104 @@
+class Solution {
+public:
+
+    void seive(vector<bool>& isPrime) {
+
+        int n = isPrime.size();
+
+        isPrime[0] = false;
+        isPrime[1] = false;
+
+        for(int i = 2 ; i*i < n ; i++) {
+            
+            if(isPrime[i]) {
+                
+                for(int j = i*i ; j < n ; j += i)
+                    isPrime[j] = false;
+
+            }
+
+        }
+
+    }
+
+    int minJumps(vector<int>& nums) {
+
+        int n = nums.size();
+        int maxi = *max_element(nums.begin(), nums.end());
+        
+        vector<bool> isPrime(maxi+1, true);
+        seive(isPrime);
+
+        unordered_map<int, vector<int>> mp;
+        for(int i = 0 ; i < n ; i++) {
+
+            mp[nums[i]].push_back(i);
+
+        }
+
+
+        unordered_set<int> seen;
+        queue<int> q;
+        vector<bool> vis(n, false);
+        q.push(0);
+        vis[0] = true;
+
+        int level = 0;
+
+        while(!q.empty()) {
+
+            int size = q.size();
+
+            while(size--) {
+
+                int i = q.front();
+                q.pop();
+
+                if(i == n-1)
+                    return level;
+
+                if(i-1 >= 0 && !vis[i-1]) {
+                    vis[i-1] = true;
+                    q.push(i-1);
+                }
+
+                if(i+1 < n && !vis[i+1]) {
+                    vis[i+1] = true;
+                    q.push(i+1);
+                }
+
+                //for primes
+                if(isPrime[nums[i]]) {
+                    
+                    if(!seen.count(nums[i])) {
+
+                        for(int j = nums[i] ; j <= maxi ; j += nums[i]) {
+
+                            if(!mp.count(j))
+                                continue;
+
+                            for(auto& adjIndex : mp[j]) {
+
+                                if(!vis[adjIndex]) {
+                                    vis[adjIndex] = true;
+                                    q.push(adjIndex);
+                                }
+
+                            }
+                        }
+                    }
+
+                    seen.insert(nums[i]);
+
+                }
+
+            }
+
+            level++;
+
+        }
+
+        return -1;
+
+    }
+};
