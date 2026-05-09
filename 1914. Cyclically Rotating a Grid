@@ -1,0 +1,55 @@
+class Solution {
+public:
+    vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) {
+        
+        int m = grid.size();
+        int n = grid[0].size();       
+
+        int sRow = 0;
+        int eRow = m-1;
+        int sCol = 0;
+        int eCol = n-1;
+
+        while(sRow < eRow && sCol < eCol) {
+
+            int perimeterCells = 2 * ((eRow - sRow + 1) + (eCol - sCol + 1)) - 4;
+            int rot = k % perimeterCells;
+
+            vector<vector<int>> result = grid;
+
+            while(rot--) {
+
+                // for start row
+                for(int j = sCol ; j <= eCol-1 ; j++) {
+                    result[sRow][j] = grid[sRow][j+1];
+                }
+
+                // for start col
+                for(int i = sRow ; i < eRow ; i++) {
+                    result[i+1][sCol] = grid[i][sCol];
+                }
+
+                // for end row
+                for(int j = sCol ; j < eCol ; j++) {
+                    result[eRow][j+1] = grid[eRow][j];
+                }
+
+                //for end col
+                for(int i = sRow ; i < eRow ; i++) {
+                    result[i][eCol] = grid[i+1][eCol];
+                }
+
+                grid = result;
+            }
+
+            sRow++;
+            sCol++;
+            eRow--;
+            eCol--;
+
+        }
+
+        return grid;
+
+    }
+};
