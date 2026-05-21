@@ -1,0 +1,82 @@
+class Solution {
+public:
+
+    struct TrieNode {
+
+        vector<TrieNode*> children;
+
+    };
+
+    TrieNode* getNewNode() {
+
+        TrieNode* newNode = new TrieNode();
+        newNode->children.assign(10, NULL);
+
+        return newNode;
+
+    }
+
+    void insert(string& num, TrieNode* root) {
+
+        TrieNode* crawler = root;
+
+        for(auto& s : num) {
+
+            int digit = s - '0';
+
+            if(!crawler->children[digit]) {
+                crawler->children[digit] = getNewNode();
+            }
+
+            crawler = crawler->children[digit];
+
+        }
+
+    }
+
+    int findLongestCommonPrefix(string& num, TrieNode* root) {
+
+        TrieNode* crawler = root;
+        int len = 0;
+        for(auto& s : num) {
+
+            int digit = s - '0';
+
+            if(crawler->children[digit]) {
+                len++;
+                crawler = crawler->children[digit];
+            }
+            else {
+                break;
+            }
+
+        }
+
+        return len;
+
+    }
+
+    int longestCommonPrefix(vector<int>& arr1, vector<int>& arr2) {
+        
+        TrieNode* root = getNewNode();
+
+        for(auto& n : arr1) {
+
+            string num = to_string(n);
+            insert(num, root);
+
+        }
+
+        int maxLen = 0;
+
+        for(auto& n : arr2) {
+
+            string num = to_string(n);
+            maxLen = max(maxLen, findLongestCommonPrefix(num, root));
+
+        }
+
+        return maxLen;
+
+    }
+};
